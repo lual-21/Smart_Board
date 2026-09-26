@@ -1,0 +1,32 @@
+.overdiv {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.popup.alert {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 300px;
+  width: 90%;
+}
+
+.overBtns {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.overBtns button {
+  padding: 8px 16px;
+  cursor: pointer;
+}

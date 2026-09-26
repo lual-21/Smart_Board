@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Whiteboard</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #0f172a, #111827, #1e3a8a);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* HERO CARD */
+    .hero {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 60px;
+      width: 700px;
+      max-width: 90%;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, .08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .4);
+    }
+
+    .intro {
+      color: #60a5fa;
+      font-size: 16px;
+      margin-bottom: 15px;
+      letter-spacing: 3px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .name {
+      font-size: 56px;
+      font-weight: 800;
+      color: white;
+      line-height: 1.1;
+    }
+
+    .name span {
+      color: #60a5fa;
+    }
+
+    .subtitle {
+      margin-top: 20px;
+      font-size: 26px;
+      color: #dbeafe;
+      font-weight: 500;
+    }
+
+    .description {
+      margin-top: 20px;
+      font-size: 18px;
+      line-height: 1.8;
+      color: #cbd5e1;
+    }
+
+    .cta-button {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 18px 45px;
+      background: linear-gradient(45deg, #2563eb, #4f46e5);
+      color: white;
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: 600;
+      border-radius: 50px;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 25px #2563eb;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 0 50px #2563eb, 0 0 90px #4f46e5;
+    }
+
+    .cta-button:active {
+      transform: translateY(-2px);
+    }
+
+    /* STARS CONTAINER */
+    #stars-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* SHOOTING STAR STYLES */
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 120px;
+      background: linear-gradient(white, transparent);
+      border-radius: 50%;
+      transform: rotate(45deg);
+      opacity: 0.8;
+      animation: shoot 3s linear infinite;
+    }
+
+    .star::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -3px;
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 0 20px white, 0 0 40px white;
+    }
+
+    @keyframes shoot {
+      0% {
+        transform: translate(0, 0) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-600px, 600px) rotate(45deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- STARS CONTAINER -->
+  <div id="stars-container"></div>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <p class="intro">INTERACTIVE LEARNING PLATFORM</p>
+    <h1 class="name">ONLINE <span>WHITEBOARD</span></h1>
+    <h2 class="subtitle">Draw • Teach • Collaborate in Real Time</h2>
+    <p class="description">
+      Create live classrooms with whiteboard, chat, webcam, and screen sharing.
+    </p>
+    <a href="login.html" class="cta-button">Get Started</a>
+  </section>
+
+  <!-- JAVASCRIPT FOR DYNAMIC STARS & INTERACTIVITY -->
+  <script>
+    // Dynamically generate shooting stars across screen space
+    const starsContainer = document.getElementById('stars-container');
+    const starCount = 8;
+
+    for (let i = 0; i < starCount; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      
+      // Randomize positioning and animation delays
+      const topPos = Math.random() * 80;
+      const leftPos = Math.random() * 90 + 10;
+      const delay = Math.random() * 4;
+      const duration = 2.5 + Math.random() * 1.5;
+
+      star.style.top = `${topPos}%`;
+      star.style.left = `${leftPos}%`;
+      star.style.animationDelay = `${delay}s`;
+      star.style.animationDuration = `${duration}s`;
+
+      starsContainer.appendChild(star);
+    }
+  </script>
+
+</body>
+
+</html>
