@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Smart Board Dashboard</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, Segoe UI, Arial;
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.top {
+    height: 70px;
+    background: #0f172a;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5%;
+}
+
+.brand {
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.top button {
+    background: #334155;
+    border: 0;
+    color: #fff;
+    border-radius: 9px;
+    padding: 10px 14px;
+    cursor: pointer;
+}
+
+.wrap {
+    width: min(1180px, 92vw);
+    margin: 36px auto;
+}
+
+.head {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: end;
+}
+
+.head h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.muted {
+    color: #64748b;
+}
+
+.primary {
+    background: #2563eb;
+    color: #fff;
+    border: 0;
+    border-radius: 11px;
+    padding: 13px 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(300px, 1fr)
+    );
+    gap: 18px;
+    margin-top: 26px;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 8px 25px #0f172a0b;
+}
+
+.card h3 {
+    margin: 0 0 6px;
+}
+
+.status {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 5px 9px;
+    font-size: 12px;
+    font-weight: 700;
+    background: #e2e8f0;
+}
+
+.live {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.scheduled {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.ended {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.actions a,
+.actions button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: 0;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.enter {
+    background: #2563eb;
+    color: #fff;
+}
+
+.copy {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #0f172a88;
+    place-items: center;
+    padding: 20px;
+}
+
+.modal.show {
+    display: grid;
+}
+
+.dialog {
+    background: #fff;
+    border-radius: 20px;
+    width: min(560px, 100%);
+    padding: 28px;
+}
+
+.dialog h2 {
+    margin-top: 0;
+}
+
+.field {
+    margin: 12px 0;
+}
+
+.field label {
+    display: block;
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.field input,
+.field textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+}
+
+.checks {
+    display: grid;
+    gap: 8px;
+}
+
+.checks label {
+    font-size: 14px;
+}
+
+.dialog-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: end;
+}
+
+.dialog-actions button {
+    padding: 11px 16px;
+    border-radius: 10px;
+    border: 0;
+    cursor: pointer;
+}
+
+.cancel {
+    background: #e2e8f0;
+}
+
+.create {
+    background: #2563eb;
+    color: #fff;
+}
+
+@media(max-width:650px) {
+    .head {
+        align-items: start;
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="top">
+    <div class="brand">◈ Smart Board</div>
+
+    <div>
+        <span id="userName"></span>
+        <button id="logout">Logout</button>
+    </div>
+</header>
+
+<main class="wrap">
+
+    <div class="head">
+
+        <div>
+            <h1 id="welcome">Dashboard</h1>
+
+            <p class="muted">
+                Manage your live teaching rooms and share classroom links.
+            </p>
+        </div>
+
+        <button class="primary" id="createBtn">
+            ＋ Create Classroom
+        </button>
+
+    </div>
+
+    <div id="grid" class="grid"></div>
+
+</main>
+
+<div id="modal" class="modal">
+
+    <div class="dialog">
+
+        <h2>Create classroom</h2>
+
+        <form id="createForm">
+
+            <div class="field">
+                <label>Classroom name</label>
+
+                <input
+                    id="name"
+                    required
+                    placeholder="Computer Networks"
+                >
+            </div>
+
+            <div class="field">
+                <label>Subject</label>
+
+                <input
+                    id="subject"
+                    required
+                    placeholder="Networking"
+                >
+            </div>
+
+            <div class="field">
+                <label>Description</label>
+
+                <textarea
+                    id="description"
+                    rows="3"
+                    placeholder="Optional class description"
+                ></textarea>
+            </div>
+
+            <div class="field">
+
+                <label>
+                    Maximum participants
+                </label>
+
+                <input
+                    id="maxParticipants"
+                    type="number"
+                    min="2"
+                    max="500"
+                    value="50"
+                >
+
+            </div>
+
+            <div class="checks">
+
+                <label>
+                    <input
+                        id="allowDrawing"
+                        type="checkbox"
+                        checked
+                    >
+                    Allow student drawing
+                </label>
+
+                <label>
+                    <input
+                        id="allowMic"
+                        type="checkbox"
+                        checked
+                    >
+                    Allow student microphone
+                </label>
+
+                <label>
+                    <input
+                        id="allowCamera"
+                        type="checkbox"
+                        checked
+                    >
+                    Allow student camera
+                </label>
+
+                <label>
+                    <input
+                        id="allowScreen"
+                        type="checkbox"
+                    >
+                    Allow student screen sharing
+                </label>
+
+            </div>
+
+            <p id="createError" class="muted"></p>
+
+            <div class="dialog-actions">
+
+                <button
+                    type="button"
+                    class="cancel"
+                    id="cancel"
+                >
+                    Cancel
+                </button>
+
+                <button class="create">
+                    Create Classroom
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+let me = null;
+
+const grid =
+    document.getElementById("grid");
+
+const modal =
+    document.getElementById("modal");
+
+function esc(s) {
+
+    return String(s || "").replace(
+        /[&<>"']/g,
+        c => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        }[c])
+    );
+
+}
+
+async function load() {
+
+    const r =
+        await fetch("/api/auth/me");
+
+    if (!r.ok) {
+
+        location.href = "/login.html";
+        return;
+
+    }
+
+    me = (await r.json()).user;
+
+    userName.textContent =
+        me.fullName;
+
+    welcome.textContent =
+        `Welcome, ${me.fullName}`;
+
+    if (!["TEACHER", "ADMIN"].includes(me.role)) {
+
+        createBtn.style.display = "none";
+
+    }
+
+    const rr =
+        await fetch("/api/classrooms");
+
+    const d =
+        await rr.json();
+
+    if (!rr.ok) {
+
+        grid.innerHTML =
+            `<p>${esc(d.error)}</p>`;
+
+        return;
+
+    }
+
+    grid.innerHTML =
+        d.classrooms.map(c => `
+
+        <article class="card">
+
+            <span class="status ${c.status.toLowerCase()}">
+                ${c.status}
+            </span>
+
+            <h3>
+                ${esc(c.name)}
+            </h3>
+
+            <div class="muted">
+                ${esc(c.subject)}
+            </div>
+
+            <p class="muted">
+                ${esc(c.description || "No description")}
+            </p>
+
+            <small>
+                ${c.participants}
+                participant${c.participants === 1 ? "" : "s"}
+                ·
+                ${new Date(c.createdAt).toLocaleDateString()}
+            </small>
+
+            <div class="actions">
+
+                <a
+                    class="enter"
+                    href="/classroom/${encodeURIComponent(c.classroomId)}"
+                >
+                    ${c.status === "ENDED" ? "View" : "Enter"}
+                </a>
+
+                ${
+                    ["TEACHER", "ADMIN"].includes(me.role)
+                    && c.status !== "ENDED"
+
+                    ? `
+                    <button
+                        class="copy"
+                        data-link="${location.origin}/classroom/${c.classroomId}"
+                    >
+                        Copy link
+                    </button>
+                    `
+                    : ""
+                }
+
+            </div>
+
+        </article>
+
+        `).join("")
+        ||
+        `<p class="muted">No classrooms yet.</p>`;
+
+    document
+        .querySelectorAll("[data-link]")
+        .forEach(b => {
+
+            b.onclick = async () => {
+
+                await navigator.clipboard.writeText(
+                    b.dataset.link
+                );
+
+                b.textContent = "Copied!";
+
+            };
+
+        });
+
+}
+
+createBtn.onclick =
+    () => modal.classList.add("show");
+
+cancel.onclick =
+    () => modal.classList.remove("show");
+
+createForm.onsubmit =
+    async e => {
+
+        e.preventDefault();
+
+        createError.textContent =
+            "Creating…";
+
+        const body = {
+
+            name: name.value,
+
+            subject: subject.value,
+
+            description: description.value,
+
+            maxParticipants:
+                Number(maxParticipants.value),
+
+            allowStudentDrawing:
+                allowDrawing.checked,
+
+            allowStudentMicrophone:
+                allowMic.checked,
+
+            allowStudentCamera:
+                allowCamera.checked,
+
+            allowStudentScreenSharing:
+                allowScreen.checked
+
+        };
+
+        const r =
+            await fetch(
+                "/api/classrooms",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify(body)
+                }
+            );
+
+        const d =
+            await r.json();
+
+        if (!r.ok) {
+
+            createError.textContent =
+                d.error;
+
+            return;
+
+        }
+
+        modal.classList.remove("show");
+
+        location.href =
+            "/classroom/" +
+            d.classroom.classroomId;
+
+    };
+
+logout.onclick =
+    async () => {
+
+        await fetch(
+            "/api/auth/logout",
+            {
+                method: "POST"
+            }
+        );
+
+        location.href =
+            "/login.html";
+
+    };
+
+load();
+
+</script>
+
+</body>
+</html>
