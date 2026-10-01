@@ -303,7 +303,7 @@ window.enterClassroom =
     function(classroomId) {
 
         window.location.href =
-            `classroom.html?classroom=${encodeURIComponent(
+            `classroom.html?room=${encodeURIComponent(
                 classroomId
             )}`;
     };

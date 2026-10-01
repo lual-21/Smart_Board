@@ -7,6 +7,8 @@ const roomId =
     decodeURIComponent(
         new URLSearchParams(location.search).get("room")
         ||
+        new URLSearchParams(location.search).get("classroom")
+        ||
         location.pathname
             .split("/")
             .filter(Boolean)
@@ -273,6 +275,12 @@ async function init() {
     } catch (e) {
 
         console.error(e);
+
+        if (String(e.message || "").toLowerCase().includes("authentication")) {
+            const next = `/classroom.html?room=${encodeURIComponent(roomId)}`;
+            location.href = `/login.html?next=${encodeURIComponent(next)}`;
+            return;
+        }
 
         showEnded(
             "Unable to join",
